@@ -1,15 +1,28 @@
-import { Body, Controller, Delete, Get, Inject, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/interfaces/user.interface';
+import { UserDto } from './user.dto';
 import { UsersService } from './users.service';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
   findAll(
-    @Query('firstName') firstName: string,
-    @Query('city') city: string,
+    @Query('firstName') firstName?: string,
+    @Query('city') city?: string,
   ): User[] {
     let list = this.usersService.getAllUsers();
 
@@ -29,7 +42,7 @@ export class UsersController {
   }
 
   @Post()
-  create(@Body() user: User) {
+  create(@Body() user: UserDto) {
     // BUG: missing user object validation
     this.usersService.createUser(user);
 
@@ -45,7 +58,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  updateUser(@Param('id') id: number, @Body() user: User) {
+  updateUser(@Param('id') id: number, @Body() user: UserDto) {
     // BUG: missing updatedUser object validations
     const res: boolean = this.usersService.updateUser(id, user);
 
