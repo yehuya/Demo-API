@@ -9,7 +9,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/interfaces/user.interface';
 import { UserDto } from './user.dto';
 import { UsersService } from './users.service';
@@ -19,6 +19,8 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiQuery({ name: 'firstName', required: false })
+  @ApiQuery({ name: 'city', required: false })
   @Get()
   findAll(
     @Query('firstName') firstName?: string,
@@ -49,6 +51,8 @@ export class UsersController {
     return { success: true };
   }
 
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 200, description: 'Users list' })
   @Get(':id')
   getUser(@Param('id') id: number) {
     const user: User = this.usersService.getUser(id);
@@ -67,6 +71,7 @@ export class UsersController {
     };
   }
 
+  @ApiResponse({ status: 404, description: 'User not found' }) // BUG: will never happened
   @Delete(':id')
   deleteUser(@Param('id') id: number) {
     // BUG: Allow deleting user that does not exist
